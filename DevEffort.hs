@@ -1,4 +1,5 @@
 module DevEffort where
+import Text.Printf
 
 data DevSystem = DS { capacity  :: Double,
                       fixing    :: Double,
@@ -59,3 +60,18 @@ evolve m = m { code   = new_code ,
           new_checks = capped new_code (checks m + c)
           new_improvements = capped new_code (improvements m + i)
           new_problems = (max 0 (problems m - f)) + additional m
+
+pretty m = [printf "Features/Fixes done:%7.2f Coverage:%3d%% Quality:%3d%%" 
+                (code m) ((round (coverage m * 100))::Integer) ((round (quality m * 100))::Integer)
+           ,printf "Requests:%7.2f" (problems m)
+           ,printf "Budget:  %7.2f" (capacity m)
+           ,printf "  Feature/Fixes:    %7.2f" (fixing m)
+           ,printf "  Coverage:         %7.2f" (checking m)
+           ,printf "  Improving Design: %7.2f" (checking m)
+
+            ]
+                        -- ,"# Requests: 1.0              "
+                        -- ,"$ Budget :               3.00"
+                        -- ,"$ Features Fixing :      1.00"
+                        -- ,"$ Improving Design:      1.00"
+                        -- ,"$ Adding Checks/Tests:   1.00"]

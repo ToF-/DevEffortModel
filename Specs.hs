@@ -84,7 +84,18 @@ main = do
                     it "increases with time spent on improving design" $ do
                         let m = evolve $ improve_design 1 $ add_checks 1 $ fix_problems  1 initial
                         improvements m `shouldBe_d` 1.0
-    
+            describe "pretty print" $ do
+                it "shows the current values" $ do
+                    let m = initial
+                    (pretty m) `shouldBe` 
+                        ["Features/Fixes done:   0.00 Coverage:100% Quality:100%"
+                        ,"Requests:   1.00"
+                        ,"Budget:     3.00"
+                        ,"  Feature/Fixes:       1.00"
+                        ,"  Coverage:            1.00"
+                        ,"  Improving Design:    1.00"
+                        ]
+
     putStr "\ntime spent is capped by capacity :\n\t"   
     quickCheck $ \m -> (fixing m + checking m + improving m) <= capacity m 
 
