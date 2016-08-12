@@ -16,4 +16,6 @@ cabal.sandbox.config
 *.hp
 *.eventlog
 .stack-work/
-cabal.project.local
+Tabal.project.local
+*.swo
+*.swp
