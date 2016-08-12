@@ -78,28 +78,31 @@ main = do
                     it "increases with time spent on adding checks" $ do
                         let m = evolve $ add_checks 1 $ fix_problems  1 initial
                         checks m `shouldBe_d` 1.0
-                describe "improements" $ do
+                describe "improvements" $ do
                     it "increases with time spent on improving design" $ do
                         let m = evolve $ improve_design 1 $ add_checks 1 $ fix_problems  1 initial
                         improvements m `shouldBe_d` 1.0
     
+    putStr "time spent is capped by capacity :"   
+    quickCheck $ \m -> (fixing m + checking m + improving m) <= capacity m 
 
-    quickCheck time_spent_is_capped_by_capacity
-    quickCheck coverage_equals_checks_on_code
-    quickCheck quality_equals_improvements_on_code
+    putStr "coverage is capped to 100pct :"        
+    quickCheck $ \m -> checks m <= code m 
 
-time_spent_is_capped_by_capacity f d c = let m = improve_design d $ add_checks c $ fix_problems f initial
-    in (fixing m + checking m + improving m) <= capacity m 
+    putStr "coverage equals checks on code :"      
+    quickCheck $ \m -> coverage m == 0.0 || coverage m == checks m / code m
 
-coverage_equals_checks_on_code f d c = let d' = 1 + capped d 3.0
-                                           c' = 1 + capped c 3.0
-                                           f' = 1 + capped f 3.0
-                                           m = evolve $ improve_design d' $ add_checks c' $ fix_problems f' initial 
-    in rounded (coverage m) == rounded (checks m / code m) 
- 
-quality_equals_improvements_on_code f d c = let d' = 1 + capped d 3.0
-                                                c' = 1 + capped c 3.0
-                                                f' = 1 + capped f 3.0
-                                                m = evolve $ improve_design d' $ add_checks c' $ fix_problems f' initial 
-    in rounded (quality m) == rounded (improvements m / code m) 
- 
+    putStr "design quality is capped to 100pct :"        
+    quickCheck $ \m -> improvements m <= code m 
+
+    putStr "quality equals improvements on code :" 
+    quickCheck $ \m -> quality m == improvements m / code m 
+
+
+instance Arbitrary DevSystem where
+    arbitrary = do 
+                d <- fmap ((1+).(capped 3.0)) arbitrary
+                c <- fmap ((1+).(capped 3.0)) arbitrary
+                f <- fmap ((1+).(capped 3.0)) arbitrary
+                return (evolve (improve_design d (add_checks c (fix_problems f initial)))) 
+

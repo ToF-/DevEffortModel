@@ -46,9 +46,12 @@ improve_design t m = m { improving = v }
     where r = (capacity m - fixing m - checking m)
           v = capped r t
           
-evolve m = m { code   = (code m) + f,
-               checks = (checks m) + c,
-               improvements = (improvements m) + i }
+evolve m = m { code   = new_code ,
+               checks = new_checks , 
+               improvements = new_improvements }
     where f = fixing m
           c = checking m
           i = improving m 
+          new_code = code m + f
+          new_checks = capped new_code (checks m + c)
+          new_improvements = capped new_code (improvements m + i)
