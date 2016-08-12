@@ -21,4 +21,20 @@ initial = DS { capacity   =  3.0,
                additional =  0.0,
                required   =  1.0 }
 
+capped m = (max 0) . (min m) 
 
+fix_problems t m = m { fixing    = v , 
+                       improving = (r - v) / 2.0,
+                       checking  = (r - v) / 2.0 }
+    where r = capacity m
+          v = capped r t
+
+add_checks t m = m { checking  = v,
+                     improving = (r - v) }
+    where r = (capacity m - fixing m) 
+          v = capped r t 
+          
+improve_design t m = m { improving = v }
+    where r = (capacity m - fixing m - checking m)
+          v = capped r t
+          
