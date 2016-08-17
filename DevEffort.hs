@@ -1,5 +1,7 @@
 module DevEffort where
 import Text.Printf
+import Data.Char
+import Data.Maybe
 
 data DevSystem = DS { capacity  :: Double,
                       fixing    :: Double,
@@ -65,13 +67,26 @@ pretty m = [printf "Features/Fixes done:%7.2f Coverage:%3d%% Quality:%3d%%"
                 (code m) ((round (coverage m * 100))::Integer) ((round (quality m * 100))::Integer)
            ,printf "Requests:%7.2f" (problems m)
            ,printf "Budget:  %7.2f" (capacity m)
-           ,printf "  Feature/Fixes:    %7.2f" (fixing m)
-           ,printf "  Coverage:         %7.2f" (checking m)
-           ,printf "  Improving Design: %7.2f" (checking m)
-
+           ,printf "  Improving Feature/Fixes:    %7.2f" (fixing m)
+           ,printf "  Improving Coverage:         %7.2f" (checking m)
+           ,printf "  Improving Design:           %7.2f" (checking m)
             ]
-                        -- ,"# Requests: 1.0              "
-                        -- ,"$ Budget :               3.00"
-                        -- ,"$ Features Fixing :      1.00"
-                        -- ,"$ Improving Design:      1.00"
-                        -- ,"$ Adding Checks/Tests:   1.00"]
+
+prompt = "F)eature <N>  C)overage <N>  D)esign <N>  R)un  Q)uit"  
+ 
+data Command = Feature Double
+             | Coverage Double
+             | Design Double
+             | Run
+             | Quit
+    deriving (Eq, Show)
+
+
+parse s = case words (map toUpper s) of
+    ["F",v] -> listToMaybe (map fst (reads v)) >>= return . Feature 
+    ["C",v] -> listToMaybe (map fst (reads v)) >>= return . Coverage 
+    ["D",v] -> listToMaybe (map fst (reads v)) >>= return . Design 
+    ["R"]   -> Just Run
+    ["Q"]   -> Just Quit
+    _       -> Nothing
+    

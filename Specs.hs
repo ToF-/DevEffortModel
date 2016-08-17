@@ -91,10 +91,24 @@ main = do
                         ["Features/Fixes done:   0.00 Coverage:100% Quality:100%"
                         ,"Requests:   1.00"
                         ,"Budget:     3.00"
-                        ,"  Feature/Fixes:       1.00"
-                        ,"  Coverage:            1.00"
-                        ,"  Improving Design:    1.00"
+                        ,"  Improving Feature/Fixes:       1.00"
+                        ,"  Improving Coverage:            1.00"
+                        ,"  Improving Design:              1.00"
                         ]
+            describe "prompt" $ do
+                it "shows available commands" $ do
+                    prompt `shouldBe` "F)eature <N>  C)overage <N>  D)esign <N>  R)un  Q)uit"  
+
+            describe "parse" $ do
+                it "parses a command" $ do
+                    parse "f  1.4" `shouldBe` (Just $ Feature 1.4)
+                    parse "F  2.4" `shouldBe` (Just $ Feature 2.4)
+                    parse "f  foo" `shouldBe` Nothing
+                    parse "c  1.0" `shouldBe` (Just $ Coverage 1.0)  
+                    parse "d  1.0" `shouldBe` (Just $ Design 1.0)  
+                    parse "r" `shouldBe` (Just Run)
+                    parse "q" `shouldBe` (Just Quit)
+                    parse "foo" `shouldBe` Nothing
 
     putStr "\ntime spent is capped by capacity :\n\t"   
     quickCheck $ \m -> (fixing m + checking m + improving m) <= capacity m 
