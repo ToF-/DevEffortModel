@@ -56,8 +56,8 @@ evolve m = m { code   = new_code ,
                improvements = new_improvements,
                problems = new_problems }
     where f = fixing m / required m
-          c = checking m
-          i = improving m 
+          c = checking m / required m
+          i = improving m / required m
           new_code = code m + f
           new_checks = capped new_code (checks m + c)
           new_improvements = capped new_code (improvements m + i)
