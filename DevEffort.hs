@@ -61,7 +61,7 @@ evolve m = m { code   = new_code ,
           new_code = code m + f
           new_checks = capped new_code (checks m + c)
           new_improvements = capped new_code (improvements m + i)
-          new_problems = (max 0 (problems m - f)) + additional m
+          new_problems = (max 0 (problems m - f)) + additional m + 1.0
 
 pretty m = [printf "Features/Fixes done:%7.2f Coverage:%3d%% Quality:%3d%%" 
                 (code m) ((round (coverage m * 100))::Integer) ((round (quality m * 100))::Integer)
@@ -90,3 +90,8 @@ parse s = case words (map toUpper s) of
     ["Q"]   -> Just Quit
     _       -> Nothing
     
+execute :: Command -> DevSystem -> DevSystem
+execute (Feature f)  ds = fix_problems f ds
+execute (Coverage f) ds = add_checks f ds
+execute (Design f)   ds = improve_design f ds
+execute Run ds          = evolve ds

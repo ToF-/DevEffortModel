@@ -72,6 +72,10 @@ main = do
                     problems m `shouldBe_d` 2.0
                     
             describe "evolves" $ do
+                describe "implicitely" $ do 
+                    it "brings new requests" $ do
+                        let m = evolve initial
+                        problems m `shouldBe_d` 1.0 
                 describe "code" $ do
                     it "increases with time spent on fixing problems" $ do
                         let m = evolve $ fix_problems  1 initial
@@ -109,6 +113,17 @@ main = do
                     parse "r" `shouldBe` (Just Run)
                     parse "q" `shouldBe` (Just Quit)
                     parse "foo" `shouldBe` Nothing
+
+            describe "execute" $ do
+                it "executes a command" $ do
+                    let m = execute (Feature 0.4) initial 
+                    fixing m `shouldBe_d` 0.4
+                    let m = execute (Coverage 0.4) initial 
+                    checking m `shouldBe_d` 0.4
+                    let m = execute (Design 0.4) initial 
+                    improving m `shouldBe_d` 0.4
+                    let m = execute Run (execute (Feature 1.0 ) initial) 
+                    code m `shouldBe_d` 1.0
 
     putStr "\ntime spent is capped by capacity :\n\t"   
     quickCheck $ \m -> (fixing m + checking m + improving m) <= capacity m 
