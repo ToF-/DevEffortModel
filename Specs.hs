@@ -54,6 +54,7 @@ main = do
                 it "should be capped by capacity minus time spent fixing requests" $ do
                     let m = add_checks 2 $ fix_requests 1.8 initial
                     checking m `shouldBe_d` 1.2
+                    improving m `shouldBe_d` 0.0
                 it "should impact time spent improving design" $ do
                     let m = add_checks 1.0 $ fix_requests 1.8 initial
                     improving m `shouldBe_d` 0.2
@@ -93,7 +94,7 @@ main = do
                     let m = initial
                     (pretty m) `shouldBe` 
                         ["Features/Fixes done:   0.00 Coverage:100% Quality:100%"
-                        ,"Requests:   1.00"
+                        ,"Requests:   1.00    Progress:  0%"
                         ,"Budget:     3.00"
                         ,"  Improving Feature/Fixes:       1.00"
                         ,"  Improving Coverage:            1.00"
@@ -142,6 +143,9 @@ main = do
 
     putStr "\nefficiency equals 1 over quality x coverage :\n\t" 
     quickCheck $ \m -> efficiency m == 1.0 / (quality m * coverage m)
+
+    putStr "\nProgress equals features / features + requests :\n\t"
+    quickCheck $ \m -> progress m == (features m) / (features m + requests m)
 
     putStr "\nadditional requests equals 2 - quality - coverage :\n\t"
     quickCheck $ \m -> rounded (additional m) == rounded (2.0 - quality m - coverage m)

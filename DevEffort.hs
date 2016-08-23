@@ -22,6 +22,7 @@ initial = DS { capacity   =  3.0,
                checks     =  0.0,
                improvements= 0.0 }
 
+progress m = features m / (features m + requests m)
 coverage m | features m > 0.0 = checks m / features m 
            | otherwise    = 1.0
 
@@ -66,11 +67,11 @@ evolve m = add_requests 1.0 m'
 
 pretty m = [printf "Features/Fixes done:%7.2f Coverage:%3d%% Quality:%3d%%" 
                 (features m) ((round (coverage m * 100))::Integer) ((round (quality m * 100))::Integer)
-           ,printf "Requests:%7.2f" (requests m)
+           ,printf "Requests:%7.2f    Progress:%3d%%" (requests m) ((round (progress m * 100))::Integer)
            ,printf "Budget:  %7.2f" (capacity m)
            ,printf "  Improving Feature/Fixes:    %7.2f" (fixing m)
            ,printf "  Improving Coverage:         %7.2f" (checking m)
-           ,printf "  Improving Design:           %7.2f" (checking m)
+           ,printf "  Improving Design:           %7.2f" (improving m)
             ]
 
 prompt = "F)eature <N>  C)overage <N>  D)esign <N>  R)un  Q)uit"  
